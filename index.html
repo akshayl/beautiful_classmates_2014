@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Sloanies Around the World | MBA 2014</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Add custom CSS here -->
+    <style>
+    body {
+        margin-top: 60px;
+    }
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Sloanies Around the World | MBA 2014</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="index.html?scope=world">World</a></li>
+                    <li><a href="index.html?scope=usa">USA</a></li>
+                </ul>
+                
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://akshayluther.com/" target="_blank">Visualization by Akshay Luther</a></li>
+                </ul>
+                
+            </div>
+            <!-- /.navbar-collapse -->
+            
+
+        </div>
+
+            
+        <!-- /.container -->
+    </nav>
+
+<!--    <div class="container" id="container"></div>-->
+    
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="map-container" style="position: relative; width: 100%; max-height: 550px;"></div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- JavaScript -->
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4f27e8625d04eece"></script>
+
+    <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }        
+        
+        var scope = getParameterByName('scope');
+        if (scope == '') scope = 'world';
+        
+        var map = new Datamap({
+            scope: scope,
+            element: document.getElementById('map-container'),
+            fills: {
+                defaultFill: '#eeeeee',
+                defaultBubble : '#009999'
+            },
+            geographyConfig: {
+                borderWidth: 0,
+                borderColor: '#ffffff',
+                popupOnHover: false,
+                highlightOnHover: false
+            }
+        });
+        
+        bubblesConfig = {
+            borderWidth: 1,
+            borderColor: '#007a7a',
+            fillOpacity: .5,
+            highlightFillColor: '#ffcc00',
+            highlightBorderColor: '#CCA300',
+            highlightBorderWidth: 1,
+            highlightFillOpacity: 0.9,
+            popupTemplate: function(geography, data) {
+              return '<div class="hoverinfo"><strong>' + data.name + '</strong>' +
+                '<br>' + data.count  + ' Sloanie(s)' + '</div>';
+            },            
+        }
+
+        $.getJSON("data/aggregated.json", function(cities) {
+            var bubbles = [];
+            
+            $.each(cities, function(index, value) {
+                var bubble = {
+                    'name': value.city,
+                    'count' : value.count,
+                    'radius': Math.sqrt(value.count * 25),
+                    'latitude': value.lat,
+                    'longitude': value.lng,
+                    'country' : value.country,
+                    'fillKey' : 'defaultBubble'
+                }
+                
+                if ((scope == 'world') || (scope == 'usa' && bubble.country == 'United States'))
+                {
+                    bubbles.push(bubble);
+                }
+            });
+            
+            map.bubbles(bubbles, bubblesConfig);
+        });
+        
+    </script>
+
+    <div class="addthis_sharing_toolbox"></div>
+
+    <!-- Start of StatCounter Code for Default Guide -->
+    <script type="text/javascript">
+    var sc_project=9911627; 
+    var sc_invisible=1; 
+    var sc_security="bd98a8ea"; 
+    var scJsHost = (("https:" == document.location.protocol) ?
+    "https://secure." : "http://www.");
+    document.write("<sc"+"ript type='text/javascript' src='" +
+    scJsHost+
+    "statcounter.com/counter/counter.js'></"+"script>");
+    </script>
+    <noscript><div class="statcounter"><a title="hit counter"
+    href="http://statcounter.com/" target="_blank"><img
+    class="statcounter"
+    src="http://c.statcounter.com/9911627/0/bd98a8ea/1/"
+    alt="hit counter"></a></div></noscript>
+    <!-- End of StatCounter Code for Default Guide -->
+    
+</body>
+
+</html>
